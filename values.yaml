@@ -843,7 +843,7 @@ puppetdb:
     #  service.kubernetes.io/ibm-load-balancer-cloud-provider-ip-type: "private"
     labels: {}
     loadBalancerIP: ""
-    clusterIP: ""
+    # clusterIP: "8.9.9.8"
 
   ## Custom puppetdb conf.d configs
   ##
