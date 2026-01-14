@@ -20,10 +20,10 @@ spec:
     - name: pdb-https
       port: 8081
       targetPort: pdb-https
-    {{- if .Values.puppetboard.enabled }}
-    - name: puppetboard
-      port: {{ .Values.puppetboard.port }}
-      targetPort: {{ .Values.puppetboard.service.targetPort }}
+    {{- if .Values.openvoxview.enabled }}
+    - name: openvoxview
+      port: {{ .Values.openvoxview.port }}
+      targetPort: {{ .Values.openvoxview.service.targetPort }}
     {{- end }}
     {{- if .Values.metrics.prometheus.enabled }}
     - name: metrics

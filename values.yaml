@@ -929,15 +929,15 @@ postgresql:
 
 ## Puppetboard Configuration
 ##
-puppetboard:
+openvoxview:
   enabled: false
-  name: puppetboard
-  image: ghcr.io/voxpupuli/puppetboard
-  tag: 6.0.0
+  name: openvoxview
+  image: ghcr.io/voxpupuli/openvoxview
+  tag: v0.1.26
   port: 9090
   pullPolicy: IfNotPresent
   service:
-    targetPort: puppetboard
+    targetPort: openvoxview
   resources: {}
   #  requests:
   #    memory: 368Mi
@@ -945,14 +945,14 @@ puppetboard:
   #  limits:
   #    memory: 640Mi
   #    cpu: 500m
-  ## Additional puppetboard container environment variables
+  ## Additional openvoxview container environment variables
   ##
   extraEnv: {}
   #  ENABLE_CATALOG: True
   #  ENABLE_QUERY: True
   #  INVENTORY_FACTS: Hostname,fqdn,IP Address,ipaddress
   #  GRAPH_FACTS: architecture,puppetversion,osfamily
-  ## Additional puppetboard container environment variables from a pre-existing K8s secret
+  ## Additional openvoxview container environment variables from a pre-existing K8s secret
   extraEnvSecret: ""
   securityContext:
     runAsNonRoot: true
@@ -975,15 +975,15 @@ puppetboard:
     ## Must be provided if Ingress is enabled
     ##
     hosts: []
-    #   - puppetboard.domain.com
-    #   - domain.com/puppetboard
+    #   - openvoxview.domain.com
+    #   - domain.com/openvoxview
     ## Puppetboard Ingress TLS configuration
     ## Secrets must be manually created in the namespace
     ##
     tls: []
-    #   - secretName: puppetboard-server-tls
+    #   - secretName: openvoxview-server-tls
     #     hosts:
-    #       - puppetboard.domain.com
+    #       - openvoxview.domain.com
 
 ## Hiera Configuration for Puppet Server
 ##
