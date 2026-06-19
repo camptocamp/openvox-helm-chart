@@ -268,6 +268,9 @@ spec:
           volumeMounts:
             - name: puppetdb-storage
               mountPath: /opt/puppetlabs/server/data/puppetdb
+            - name: openvoxview-config
+              mountPath: /config.yaml
+              subPath: config.yaml
         {{- end }}
         {{- if and .Values.singleCA.enabled .Values.singleCA.crl.asSidecar }}
         # singleCA crl script update Sidecar
@@ -402,6 +405,15 @@ spec:
         - name: puppetdb-custom-configs
           configMap:
             name: {{ include "puppetdb.fullname" . }}-custom-configs
+        {{- end }}
+        {{- if .Values.openvoxview.enabled }}
+        - name:  openvoxview-config
+          configMap:
+            name: {{ template "puppetdb.fullname" . }}-openvoxview-config
+            defaultMode: 420
+            items:
+            - key: config.yaml
+              path: config.yaml
         {{- end }}
       {{- if .Values.nodeSelector }}
       nodeSelector:

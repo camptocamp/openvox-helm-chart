@@ -1,0 +1,14 @@
+{{- if .Values.openvoxview.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "puppetdb.fullname" . }}-openvoxview-config
+  labels:
+    {{- include "puppetserver.puppetdb.labels" . | nindent 4 }}
+    {{- range $key, $value := .Values.puppetdb.extraLabels }}
+    {{ $key }}: {{ $value }}
+    {{- end }}
+data:
+  config.yaml: |
+    {{ .Values.openvoxview.customconfigs.configmap | nindent 4 }}
+{{- end }}
