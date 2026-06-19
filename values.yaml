@@ -992,6 +992,73 @@ openvoxview:
   name: openvoxview
   image: ghcr.io/voxpupuli/openvoxview
   tag: v1.4.0
+  # configure the pre-defined queries and views.
+  customconfigs:
+    configmap: |
+      ---
+      queries:
+      - description: List all certificate names from all known nodes
+        query: nodes[certname] {}
+      - description: Get all nodes that have a specific class in their catalog
+        query: nodes[certname] {resources {type = "Class" and title = "CapitalizedClassname"}}
+      - description: Get all nodes that have a specific class using a specific parameter value
+        query: nodes[certname] {resources {type = "Class" and title = "CapitalizedClassname" and parameters.cluster_name = "ClusterName"}}
+      - description: Get a list of all roles / profiles
+        query: resources[title] {type = "Class" and title ~ "Role" group by title}
+      - description: Get all nodes that have a specific class in their catalog and start with bla-
+        query: nodes[certname] {certname ~ "^bla-" and resources {type = "Class" and title = "CapitalizedClassname"}}
+      - description: Get all nodes with changes and a specific resource
+        query: nodes[certname] {latest_report_status = "changed" and certname in inventory[certname]{resources { type = "Service" and title = "my_service"}}}
+      - description: Get all nodes where one specific resource changed
+        query: events[certname] {resource_type = "Service" and resource_title = "apache2" and latest_report? = true and corrective_change = true}
+      - description: Get a list of nodes with stale catalogs
+        query: catalogs[certname,producer_timestamp] {producer_timestamp < "2022-06-21T07:00:00.000-05:00"}
+      - description: Get a list of nodes with a catalog that has failed to compile but used a cached catalog during a specific time window
+        query: reports[certname,transaction_uuid,receive_time] {cached_catalog_status="on_failure" and start_time > "2021-10-27T15:36:00-05:00" and end_time < "2021-10-27T16:35:00-05:00"}
+      - description: Get all nodes with corrective changes
+        query: events[certname]{corrective_change = true and report_receive_time > "2024-06-18T00:00:00.000Z" group by certname}
+      - description: Get all inactive nodes
+        query: nodes[certname] {node_state = "inactive"}
+      - description: Get all nodes where the last catalog compilation failed
+        query: nodes[certname] {latest_report_status = "failed"}
+      - description: Get a list of nodes with a specific fact value
+        query: inventory[certname] {facts.os.name = "windows"}
+      - description: Get a list of nodes with two specific facts
+        query: inventory[certname] {facts.os.name = "AlmaLinux" and facts.os.release.major = "8"}
+      - description: Get all nodes and their Puppet Agent version except for version X
+        query: inventory[certname,facts.aio_agent_build]{facts.aio_agent_build != "7.28.0"}
+      - description: Get all resources from one type for one node
+        query: resources {type = "File" and certname = "puppet.local"}
+      - description: Get one param/attribute for one type of resource for one node
+        query: resources[file] {type = "File" and certname = "puppet.local"}
+      - description: Count all resources of one type
+        query: resources[count()] {type = "File"}
+      - description: Count all resources
+        query: resources[count()] {}
+      - description: Get a list of nodes for which a fact is not set
+        query: inventory[certname] {! certname in inventory[certname] {facts.myfactofinterest is not null}}
+      - description: Get a list of nodes with a specific structured fact value while using a wildcard in the fact structure
+        query: fact_contents {path ~> ["first_level",".*","third_level"] and value = "Y"}
+      - description: Get a list of nodes with a structured fact value matching a value in a list
+        query: fact_contents[certname] {path ~> ["dmi", "product", "name"] and value in ["HP Z230 SFF Workstation", "HP Z420 Workstation"]}
+      - description: Get all values for a fact
+        query: facts[value]{name = "domain" group by value}
+      - description: Get value for fact A that have a specific value on fact b
+        query: inventory[certname,facts.networking.ip]{trusted.extensions.pp_role = "foobar"}
+      - description: Get all values for a structured fact
+        query: inventory[facts.networking.ip]{group by facts.networking.ip}
+      - description: Get all values for a trusted fact via inventory
+        query: inventory[trusted.extensions.pp_role]{group by trusted.extensions.pp_role}
+      - description: Get all values for a trusted fact via facts_contents
+        query: fact_contents[value] {path = ["trusted","extensions","pp_role"] group by value}
+      - description: Get a structured fact but exclude empty hashes
+        query: inventory[facts.users.root.ssh_public_keys]{facts.users.root.ssh_public_keys !~ "{}" order by certname}
+      - description: Get a sorted list of all recent event failures
+        query: events[resource_type,resource_title,count()] {latest_report? = true and status = "failure" group by resource_type, resource_title}
+      - description: Get class information from latest catalogs from all nodes
+        query: resources {type = "Class" and title = "Profile::Core::Node_info"}
+      - description: Get class information from latest catalogs from all nodes that had another class in their last catalog
+        query: resources {type = "Class" and title = "Profile::Core::Node_info" and certname in resources[certname] {type = "Class" and title = "Prometheus::Node_exporter"}}
   port: 5000
   pullPolicy: IfNotPresent
   service:

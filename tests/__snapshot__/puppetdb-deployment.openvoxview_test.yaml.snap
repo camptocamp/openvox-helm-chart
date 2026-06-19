@@ -116,6 +116,9 @@ should include openvoxview sidecar when enabled:
               volumeMounts:
                 - mountPath: /opt/puppetlabs/server/data/puppetdb
                   name: puppetdb-storage
+                - mountPath: /config.yaml
+                  name: openvoxview-config
+                  subPath: config.yaml
           hostname: puppetdb
           imagePullSecrets: null
           initContainers:
@@ -171,3 +174,10 @@ should include openvoxview sidecar when enabled:
             - name: puppetdb-storage
               persistentVolumeClaim:
                 claimName: puppetserver-puppetdb-claim
+            - configMap:
+                defaultMode: 420
+                items:
+                  - key: config.yaml
+                    path: config.yaml
+                name: puppetserver-puppetdb-openvoxview-config
+              name: openvoxview-config
