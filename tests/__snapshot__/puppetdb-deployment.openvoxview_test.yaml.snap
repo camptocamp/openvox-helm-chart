@@ -8,7 +8,7 @@ should include openvoxview sidecar when enabled:
         app.kubernetes.io/instance: puppetserver
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: puppetserver
-        app.kubernetes.io/version: 8.13.0
+        app.kubernetes.io/version: 8.14.0
         helm.sh/chart: puppetserver-10.1.1
       name: puppetserver-puppetdb
     spec:
@@ -26,7 +26,7 @@ should include openvoxview sidecar when enabled:
             app.kubernetes.io/instance: puppetserver
             app.kubernetes.io/managed-by: Helm
             app.kubernetes.io/name: puppetserver
-            app.kubernetes.io/version: 8.13.0
+            app.kubernetes.io/version: 8.14.0
             helm.sh/chart: puppetserver-10.1.1
         spec:
           containers:
@@ -52,7 +52,7 @@ should include openvoxview sidecar when enabled:
                 - name: PUPPETDB_JAVA_ARGS
                   value: ""
               envFrom: null
-              image: ghcr.io/openvoxproject/openvoxdb:8.13.0-main
+              image: ghcr.io/openvoxproject/openvoxdb:8.14.0-main
               imagePullPolicy: IfNotPresent
               name: puppetdb
               ports:
@@ -110,9 +110,9 @@ should include openvoxview sidecar when enabled:
                 capabilities:
                   drop:
                     - all
-                runAsGroup: 999
+                runAsGroup: 1001
                 runAsNonRoot: true
-                runAsUser: 999
+                runAsUser: 1001
               volumeMounts:
                 - mountPath: /opt/puppetlabs/server/data/puppetdb
                   name: puppetdb-storage

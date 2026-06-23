@@ -3,13 +3,14 @@ manifest should match snapshot:
     apiVersion: v1
     kind: PersistentVolumeClaim
     metadata:
-      annotations: null
+      annotations:
+        helm.sh/hook: pre-install
       labels:
         app.kubernetes.io/component: puppetserver
         app.kubernetes.io/instance: puppetserver
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: puppetserver
-        app.kubernetes.io/version: 8.13.0
+        app.kubernetes.io/version: 8.14.0
         helm.sh/chart: puppetserver-10.1.1
       name: puppetserver-puppet-claim
     spec:

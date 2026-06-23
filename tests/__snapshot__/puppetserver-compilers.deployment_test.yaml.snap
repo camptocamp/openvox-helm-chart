@@ -8,7 +8,7 @@ manifest should match snapshot:
         app.kubernetes.io/instance: puppetserver
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: puppetserver
-        app.kubernetes.io/version: 8.13.0
+        app.kubernetes.io/version: 8.14.0
         helm.sh/chart: puppetserver-10.1.1
       name: puppetserver-puppetserver-compiler
     spec:
@@ -30,27 +30,18 @@ manifest should match snapshot:
             app.kubernetes.io/instance: puppetserver
             app.kubernetes.io/managed-by: Helm
             app.kubernetes.io/name: puppetserver
-            app.kubernetes.io/version: 8.13.0
+            app.kubernetes.io/version: 8.14.0
             helm.sh/chart: puppetserver-10.1.1
         spec:
           containers:
-            - env:
-                - name: OPENVOXSERVER_PORT
-                  value: "8140"
-                - name: DNS_ALT_NAMES
-                  value: puppet,puppetserver-agents-to-puppet,puppetserver-puppet,,puppetserver-puppet-compilers,
-                - name: OPENVOXDB_SERVER_URLS
-                  value: https://puppetserver-puppetdb:8081
-                - name: CA_ENABLED
-                  value: "false"
-                - name: CA_ALLOW_SUBJECT_ALT_NAMES
-                  value: "true"
-                - name: CA_HOSTNAME
-                  value: puppetserver-puppet
-                - name: CA_PORT
-                  value: "8140"
+            - args:
+                - exec /opt/puppetlabs/bin/puppetserver foreground
+              command:
+                - /bin/bash
+                - -c
+              env: null
               envFrom: null
-              image: ghcr.io/openvoxproject/openvoxserver:8.13.0-main
+              image: ghcr.io/openvoxproject/openvoxserver:8.14.0-main
               imagePullPolicy: IfNotPresent
               livenessProbe:
                 failureThreshold: 3
@@ -75,21 +66,11 @@ manifest should match snapshot:
               securityContext:
                 allowPrivilegeEscalation: false
                 capabilities:
-                  add:
-                    - CAP_CHOWN
-                    - CAP_SETUID
-                    - CAP_SETGID
-                    - CAP_DAC_OVERRIDE
-                    - CAP_AUDIT_WRITE
-                    - CAP_FOWNER
-                    - CHOWN
-                    - SETUID
-                    - SETGID
-                    - DAC_OVERRIDE
-                    - AUDIT_WRITE
-                    - FOWNER
                   drop:
                     - all
+                runAsGroup: 1001
+                runAsNonRoot: true
+                runAsUser: 1001
               startupProbe:
                 failureThreshold: 30
                 periodSeconds: 15
@@ -100,61 +81,12 @@ manifest should match snapshot:
                   name: puppet-code-storage
                 - mountPath: /etc/puppetlabs/puppet/
                   name: puppet-puppet-storage
-                - mountPath: /opt/puppetlabs/server/data/puppetserver/
-                  name: puppet-serverdata-storage
-                - mountPath: /etc/puppetlabs/puppetserver/conf.d/
-                  name: puppet-confd
+                - mountPath: /etc/puppetlabs/puppetserver/
+                  name: puppet-puppetserver
           hostname: puppet
           imagePullSecrets: null
-          initContainers:
-            - args:
-                - mkdir -p /etc/puppetlabs/puppet/eyaml/keys; mkdir -p /etc/puppetlabs/code/environments; mkdir -p /etc/puppetlabs/puppet/manifests; chown -R puppet:puppet /etc/puppetlabs; cp /tmp/puppet/configmap/site.pp /etc/puppetlabs/puppet/manifests/site.pp; chown puppet:puppet /etc/puppetlabs/puppet/manifests/site.pp; mkdir -p /opt/puppetlabs/server/data/puppetserver/dropsonde/bin/; touch /opt/puppetlabs/server/data/puppetserver/dropsonde/bin/dropsonde; chown puppet:puppet -R /opt/puppetlabs/server/data/puppetserver/;
-              command:
-                - sh
-                - -c
-              env: null
-              envFrom: null
-              image: ghcr.io/openvoxproject/openvoxserver:8.13.0-main
-              imagePullPolicy: IfNotPresent
-              name: perms-and-dirs
-              resources:
-                limits:
-                  cpu: 300m
-                  memory: 256Mi
-                requests:
-                  cpu: 200m
-                  memory: 128Mi
-              securityContext:
-                capabilities:
-                  add:
-                    - CAP_CHOWN
-                    - CAP_SETUID
-                    - CAP_SETGID
-                    - CAP_DAC_OVERRIDE
-                    - CAP_AUDIT_WRITE
-                    - CAP_FOWNER
-                    - CHOWN
-                    - SETUID
-                    - SETGID
-                    - DAC_OVERRIDE
-                    - AUDIT_WRITE
-                    - FOWNER
-                  drop:
-                    - all
-                runAsNonRoot: false
-                runAsUser: 0
-              volumeMounts:
-                - mountPath: /etc/puppetlabs/puppet/
-                  name: puppet-puppet-storage
-                - mountPath: /etc/puppetlabs/code/
-                  name: puppet-code-storage
-                - mountPath: /tmp/puppet/configmap/site.pp
-                  name: manifests-volume
-                  subPath: site.pp
-                - mountPath: /opt/puppetlabs/server/data/puppetserver/
-                  name: puppet-serverdata-storage
           securityContext:
-            fsGroup: 999
+            fsGroup: 1001
           volumes:
             - name: puppet-code-storage
               persistentVolumeClaim:
@@ -162,12 +94,9 @@ manifest should match snapshot:
             - name: puppet-puppet-storage
               persistentVolumeClaim:
                 claimName: puppetserver-puppet-claim
-            - name: puppet-serverdata-storage
-              persistentVolumeClaim:
-                claimName: puppetserver-serverdata-claim
             - configMap:
                 name: puppetserver-manifests-config
               name: manifests-volume
-            - name: puppet-confd
+            - name: puppet-puppetserver
               persistentVolumeClaim:
-                claimName: puppetserver-confd-claim
+                claimName: puppetserver-puppetserver-claim

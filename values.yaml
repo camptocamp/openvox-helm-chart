@@ -6,7 +6,7 @@
 ##
 ---
 global:
-  runAsNonRoot: false
+  runAsNonRoot: true
 
   imagePullSecrets:
 
@@ -50,9 +50,9 @@ global:
 
   ## Define the security context (not apply to all pod for now)
   securityContext:
-    runAsUser: 999  # "puppet" UID
-    runAsGroup: 999  # "puppet" GID
-    fsGroup: 999  # "puppet" GID
+    runAsUser: 1001  # "puppet" UID
+    runAsGroup: 1001  # "puppet" GID
+    fsGroup: 1001  # "puppet" GID
 
   extraEnv: {}
   extraEnvSecret: ""
@@ -64,7 +64,7 @@ global:
 puppetserver:
   name: puppetserver
   image: ghcr.io/openvoxproject/openvoxserver
-  tag: 8.13.0-main
+  tag: 8.14.0-main
   pullPolicy: IfNotPresent
 
   ## Configure persistence for Puppet Server
@@ -110,7 +110,7 @@ puppetserver:
     data:
       ## The data of this volume is overwritten on each start, so persistence can be disabled marking
       ## this variable to false
-      enabled: true
+      enabled: false
       ## If an existing Persistent Volume Claim needs to be used, specify the name here.
       ## If not specified the PVC is created by this chart using the informations below or the `storage` values.
       existingClaim: ''
@@ -766,7 +766,7 @@ puppetdb:
   enabled: true
   name: puppetdb
   image: ghcr.io/openvoxproject/openvoxdb
-  tag: 8.13.0-main
+  tag: 8.14.0-main
   pullPolicy: IfNotPresent
   resources: {}
   #  requests:

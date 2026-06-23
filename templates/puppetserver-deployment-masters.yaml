@@ -138,11 +138,13 @@ spec:
               {{- if .Values.puppetserver.extraInitArgs }}
               {{- .Values.puppetserver.extraInitArgs | nindent 14 }}
               {{- end }}
+              mkdir -p /opt/puppetlabs/server/data/puppetserver/.puppetlabs/etc/puppet
               mkdir -p /opt/puppetlabs/server/data/puppetserver/dropsonde/bin/;
               touch /opt/puppetlabs/server/data/puppetserver/dropsonde/bin/dropsonde;
               chown puppet:puppet -R /opt/puppetlabs/server/data/puppetserver/;
               {{- if eq .Values.puppetserver.persistence.confd.enabled true }}
               cp -rp /etc/puppetlabs/puppetserver/conf.d/* /conf.d/;
+              chown puppet:puppet -R /conf.d/;
               {{- end}}
           securityContext:
             runAsUser: 0
@@ -577,8 +579,8 @@ spec:
               mountPath: /jmx_exporter.yaml
               subPath: jmx_exporter.yaml
           securityContext:
-            runAsUser: 999
-            runAsGroup: 999
+            runAsUser: 1001
+            runAsGroup: 1001
             runAsNonRoot: true
             allowPrivilegeEscalation: false
             capabilities:
@@ -604,7 +606,7 @@ spec:
       {{ toYaml . }}
       {{- end }}
       securityContext:
-        fsGroup: 999   # "puppet" GID
+        fsGroup: 1001   # "puppet" GID
       volumes:
         {{- if (not .Values.puppetserver.compilers.enabled) }}
         - name: puppet-code-storage
