@@ -363,8 +363,8 @@ spec:
             - name: metrics
               containerPort: {{ .Values.metrics.prometheus.puppetdb.port }}
           securityContext:
-            runAsUser: 1001
-            runAsGroup: 1001
+            runAsUser: 64604
+            runAsGroup: 64604
             runAsNonRoot: true
             allowPrivilegeEscalation: false
             capabilities:

@@ -579,8 +579,8 @@ spec:
               mountPath: /jmx_exporter.yaml
               subPath: jmx_exporter.yaml
           securityContext:
-            runAsUser: 1001
-            runAsGroup: 1001
+            runAsUser: 64604
+            runAsGroup: 64604
             runAsNonRoot: true
             allowPrivilegeEscalation: false
             capabilities:
@@ -606,7 +606,7 @@ spec:
       {{ toYaml . }}
       {{- end }}
       securityContext:
-        fsGroup: 1001   # "puppet" GID
+        fsGroup: 64604   # "puppet" GID
       volumes:
         {{- if (not .Values.puppetserver.compilers.enabled) }}
         - name: puppet-code-storage

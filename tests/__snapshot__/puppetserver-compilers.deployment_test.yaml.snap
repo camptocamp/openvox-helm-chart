@@ -68,9 +68,9 @@ manifest should match snapshot:
                 capabilities:
                   drop:
                     - all
-                runAsGroup: 1001
+                runAsGroup: 64604
                 runAsNonRoot: true
-                runAsUser: 1001
+                runAsUser: 64604
               startupProbe:
                 failureThreshold: 30
                 periodSeconds: 15
@@ -86,7 +86,7 @@ manifest should match snapshot:
           hostname: puppet
           imagePullSecrets: null
           securityContext:
-            fsGroup: 1001
+            fsGroup: 64604
           volumes:
             - name: puppet-code-storage
               persistentVolumeClaim:

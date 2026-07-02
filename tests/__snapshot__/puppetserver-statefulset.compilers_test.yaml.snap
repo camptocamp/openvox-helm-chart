@@ -150,7 +150,7 @@ manifest should match snapshot:
                   name: manifests-volume
                   subPath: site.pp
           securityContext:
-            fsGroup: 1001
+            fsGroup: 64604
           volumes:
             - configMap:
                 name: puppetserver-manifests-config

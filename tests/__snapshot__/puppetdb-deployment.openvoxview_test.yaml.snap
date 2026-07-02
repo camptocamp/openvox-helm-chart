@@ -110,9 +110,9 @@ should include openvoxview sidecar when enabled:
                 capabilities:
                   drop:
                     - all
-                runAsGroup: 1001
+                runAsGroup: 64604
                 runAsNonRoot: true
-                runAsUser: 1001
+                runAsUser: 64604
               volumeMounts:
                 - mountPath: /opt/puppetlabs/server/data/puppetdb
                   name: puppetdb-storage
